@@ -1,0 +1,37 @@
+import sys,pickle
+import os
+inputfile= sys.argv[1]
+outputfile= sys.argv[2]
+
+finame=open(inputfile,'r',encoding='UTF-8',errors='ignore')
+foname=open(outputfile,'w')
+
+list1=[]
+ftemp=open('training_ner.txt','w')
+
+for line in finame:
+ line=''.join(('START/START/START ',line.rstrip(), ' END/END/END'));
+ list1=line.split()
+ for i in range(1,len(list1)-1):
+  str1=''.join(list1[i])
+  tag_list=str1.split('/')
+  tag_list2='/'.join(tag_list[:2]), '/'.join(tag_list[2:])
+  str1=''.join(list1[i-1])
+  pre_tag_list=str1.split('/')
+  prev_list='/'.join(pre_tag_list[:2]), '/'.join(pre_tag_list[2:])
+  pre="prev_"+prev_list[0]
+  cur="cur_"+tag_list2[0]
+  str1=''.join(list1[i+1])
+  nex_tag_list=str1.split('/')
+  nex_list='/'.join(nex_tag_list[:2]), '/'.join(nex_tag_list[2:])
+  nex="nex_"+nex_list[0]
+  str1=tag_list2[1] + "  "+pre+" "+cur+" "+nex
+  ftemp.write(str1)
+  ftemp.write("\n")
+ftemp.close()   
+os.system('python3 perceplearn.py training_ner.txt MODEL_ner')
+  
+finame.close()
+foname.close()
+
+    
